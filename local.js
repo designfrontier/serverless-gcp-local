@@ -3,12 +3,13 @@ const YAML = require('yaml');
 const http = require('http');
 const { resolve } = require('path');
 const express = require('express');
+const { config: dotenvConfig } = require('dotenv');
 const handlers = require('./index');
 
 const app = express();
 const PORT = process.env.PORT || 3030;
-const file = fs.readFileSync(resolve(process.cwd(), 'serverless.yml'), 'utf8')
-const conf = YAML.parse(file);
+const file = fs.readFileSync(resolve(process.cwd(), 'serverless.yml'), 'utf8');
+const {useDotenv, ...conf} = YAML.parse(file);
 
 const getRoutes = (sls) => {
   const {functions} = sls;
@@ -34,6 +35,13 @@ const setupListeners = function (routes) {
     console.log(`Handler added for ${route}`);
     app.all(`/${route}`, handlers[routes[route].handler]);
     app.all(`/${route}/*`, handlers[routes[route].handler]);
+  });
+}
+
+if (useDotenv || useDotenv === 'true') {
+  // load env vars
+  dotenvConfig({
+    path: `./.env${process.env.STAGE ? `.${process.env.STAGE}` : ''}`,
   });
 }
 
