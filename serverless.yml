@@ -45,7 +45,6 @@ functions:
 plugins:
   - serverless-google-cloudfunctions
   - serverless-webpack
-  - serverless-offline
 
 custom:
   webpack:
